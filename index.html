@@ -90,10 +90,78 @@
         .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 
         /* Vantagens (Features) */
-        .features { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; margin-bottom: 40px; }
+        .features { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
         .feature-box { text-align: center; padding: 25px; width: 22%; min-width: 200px; }
         .feature-box h4 { color: var(--accent-main); margin-top: 10px; }
         .feature-box p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* --- CARROSSEL INFINITO DE JOGOS (IMAGENS LOCAIS) --- */
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin: 40px 0 60px 0;
+            padding: 20px 0;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+        
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            animation: scrollCarousel 40s linear infinite;
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+
+        .carousel-item {
+            width: 250px;
+            height: 350px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            background: #111;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .carousel-item::after {
+            content: attr(data-title);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px 10px 15px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1rem;
+            color: var(--accent-main);
+            pointer-events: none;
+            text-shadow: 0px 2px 4px rgba(0,0,0,1);
+        }
+
+        @keyframes scrollCarousel {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
         
         /* Banner Épicos */
         .premium-banner-section { margin: 40px auto; text-align: center; }
@@ -114,13 +182,13 @@
         /* --- FEEDBACKS DA COMUNIDADE --- */
         .feedback-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; margin-bottom: 60px; }
         .feedback-card { padding: 30px; text-align: left; display: flex; flex-direction: column; }
-        .feedback-media { width: 100%; max-height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); background: #000; outline: none; }
+        .feedback-media { width: 100%; max-height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); outline: none; }
         .feedback-stars { color: #ffcc00; font-size: 1.2rem; margin-bottom: 10px; }
         .feedback-text { color: var(--text-muted); font-style: italic; margin-bottom: 15px; font-size: 0.95rem; flex-grow: 1; }
         .feedback-author { font-weight: bold; color: var(--text-color); display: flex; align-items: center; gap: 10px; margin-top: auto; }
         .author-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-main); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Cinzel', serif; }
 
-        /* --- TOGGLE DE PREÇOS (MENSAL VS VITALÍCIO) --- */
+        /* --- TOGGLE DE PREÇOS --- */
         .pricing-toggle-wrapper { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 50px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .toggle-label { color: var(--text-muted); transition: 0.3s; cursor: pointer; }
         .toggle-label.active { color: var(--accent-main); text-shadow: 0 0 10px var(--title-glow); }
@@ -175,41 +243,10 @@
         .faq-item.active .faq-answer { max-height: 400px; padding: 0 25px 20px 25px; opacity: 1; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; padding-top: 15px; }
 
         /* --- WHATSAPP FLUTUANTE --- */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: #25D366;
-            color: #fff;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-            z-index: 99999;
-            transition: all 0.3s ease;
-            animation: pulse-wa 2s infinite;
-        }
-
-        .whatsapp-float:hover {
-            background-color: #1ebe57;
-            transform: scale(1.1);
-            box-shadow: 0px 6px 20px rgba(37, 211, 102, 0.6);
-        }
-
-        .whatsapp-float svg {
-            width: 35px;
-            height: 35px;
-            fill: currentColor;
-        }
-
-        @keyframes pulse-wa {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #25D366; color: #fff; border-radius: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5); z-index: 99999; transition: all 0.3s ease; animation: pulse-wa 2s infinite; }
+        .whatsapp-float:hover { background-color: #1ebe57; transform: scale(1.1); box-shadow: 0px 6px 20px rgba(37, 211, 102, 0.6); }
+        .whatsapp-float svg { width: 35px; height: 35px; fill: currentColor; }
+        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
 
         /* --- MODAIS DE VIDRO (LOGIN E MINHA CONTA) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.4s ease; }
@@ -324,10 +361,81 @@
         </div>
     </section>
 
+    <!-- CARROSSEL DE JOGOS INFINITO (VOLTOU PRO ESQUEMA LOCAL) -->
+    <div class="carousel-wrapper">
+        <div class="carousel-track">
+            
+            <!-- LISTA 1 -->
+            <div class="carousel-item" data-title="Forza Horizon 6">
+                <img src="assets/img/games/forza6.jpg" alt="Forza Horizon 6" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Forza+Horizon+6'">
+            </div>
+            <div class="carousel-item" data-title="RE:Requiem">
+                <img src="assets/img/games/reverse.jpg" alt="Resident Evil RE:Verse" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RE:Verse'">
+            </div>
+            <div class="carousel-item" data-title="Crimson Desert">
+                <img src="assets/img/games/crimson.jpg" alt="Crimson Desert" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Crimson+Desert'">
+            </div>
+            <div class="carousel-item" data-title="007: First Light">
+                <img src="assets/img/games/007.jpg" alt="007: First Light" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=007+First+Light'">
+            </div>
+            <div class="carousel-item" data-title="Pragmata">
+                <img src="assets/img/games/pragmata.jpg" alt="Pragmata" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Pragmata'">
+            </div>
+            <div class="carousel-item" data-title="AC Shadows">
+                <img src="assets/img/games/acshadows.jpg" alt="Assassin's Creed Shadows" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=AC+Shadows'">
+            </div>
+            <div class="carousel-item" data-title="Avatar Frontiers">
+                <img src="assets/img/games/avatar.jpg" alt="Avatar: Frontiers" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Avatar'">
+            </div>
+            <div class="carousel-item" data-title="RDR 1">
+                <img src="assets/img/games/rdr1.jpg" alt="Red Dead Redemption 1" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RDR+1'">
+            </div>
+            <div class="carousel-item" data-title="RDR 2">
+                <img src="assets/img/games/rdr2.jpg" alt="Red Dead Redemption 2" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RDR+2'">
+            </div>
+            <div class="carousel-item" data-title="GTA V">
+                <img src="assets/img/games/gta5.jpg" alt="GTA V" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=GTA+V'">
+            </div>
+
+            <!-- LISTA 2 (DUPLICATA PARA O LOOP INFINITO NÃO QUEBRAR) -->
+            <div class="carousel-item" data-title="Forza Horizon 6">
+                <img src="assets/img/games/forza6.jpg" alt="Forza Horizon 6" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Forza+Horizon+6'">
+            </div>
+            <div class="carousel-item" data-title="RE:Verse">
+                <img src="assets/img/games/reverse.jpg" alt="Resident Evil RE:Verse" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RE:Verse'">
+            </div>
+            <div class="carousel-item" data-title="Crimson Desert">
+                <img src="assets/img/games/crimson.jpg" alt="Crimson Desert" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Crimson+Desert'">
+            </div>
+            <div class="carousel-item" data-title="007: First Light">
+                <img src="assets/img/games/007.jpg" alt="007: First Light" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=007+First+Light'">
+            </div>
+            <div class="carousel-item" data-title="Pragmata">
+                <img src="assets/img/games/pragmata.jpg" alt="Pragmata" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Pragmata'">
+            </div>
+            <div class="carousel-item" data-title="AC Shadows">
+                <img src="assets/img/games/acshadows.jpg" alt="Assassin's Creed Shadows" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=AC+Shadows'">
+            </div>
+            <div class="carousel-item" data-title="Avatar Frontiers">
+                <img src="assets/img/games/avatar.jpg" alt="Avatar: Frontiers" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=Avatar'">
+            </div>
+            <div class="carousel-item" data-title="RDR 1">
+                <img src="assets/img/games/rdr1.jpg" alt="Red Dead Redemption 1" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RDR+1'">
+            </div>
+            <div class="carousel-item" data-title="RDR 2">
+                <img src="assets/img/games/rdr2.jpg" alt="Red Dead Redemption 2" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=RDR+2'">
+            </div>
+            <div class="carousel-item" data-title="GTA V">
+                <img src="assets/img/games/gta5.jpg" alt="GTA V" onerror="this.src='https://via.placeholder.com/250x350/111/00ff88?text=GTA+V'">
+            </div>
+
+        </div>
+    </div>
+
     <!-- BANNER ÉPICOS -->
     <section class="container premium-banner-section">
         <h2 class="section-title">OS UNIVERSOS MAIS <span>ÉPICOS</span> EM UM SÓ LUGAR</h2>
-        <p class="premium-banner-subtitle">Crimson Desert • Assassin's Creed • Forza Horizon • Resident Evil</p>
+        <p class="premium-banner-subtitle">O Catálogo Definitivo</p>
         <div class="banner-card">
             <img src="assets/img/banner-premium.jpg" alt="Banner Universos Épicos">
         </div>
@@ -363,12 +471,11 @@
         </div>
     </section>
 
-    <!-- FEEDBACKS DA COMUNIDADE (APENAS VÍDEO + TEXTO) -->
+    <!-- FEEDBACKS DA COMUNIDADE -->
     <section class="container">
         <h2 class="section-title">O QUE OS RECRUTAS <span>DIZEM</span></h2>
         
         <div class="feedback-section">
-            <!-- Depoimento 1 -->
             <div class="feedback-card glass-box">
                 <video class="feedback-media" controls>
                     <source src="assets/video/feedback1.mp4" type="video/mp4">
@@ -378,11 +485,10 @@
                 <p class="feedback-text">"Mano, achei que era caô, mas funcionou de primeira! Peguei o plano Esmeralda e já baixei o GTA V direto no meu app da Steam."</p>
                 <div class="feedback-author">
                     <div class="author-avatar">L</div>
-                    <span>Lucas M.</span>
+                    <span>Ramiro</span>
                 </div>
             </div>
 
-            <!-- Depoimento 2 -->
             <div class="feedback-card glass-box">
                 <video class="feedback-media" controls>
                     <source src="assets/video/feedback2.mp4" type="video/mp4">
@@ -392,21 +498,20 @@
                 <p class="feedback-text">"Suporte brabo demais! Tive uma dúvida na hora de instalar o script e a galera no WhatsApp me ajudou em 5 minutos. Tamo junto."</p>
                 <div class="feedback-author">
                     <div class="author-avatar">R</div>
-                    <span>Rafael T.</span>
+                    <span>Thiago</span>
                 </div>
             </div>
 
-            <!-- Depoimento 3 -->
             <div class="feedback-card glass-box">
                 <video class="feedback-media" controls>
                     <source src="assets/video/feedback3.mp4" type="video/mp4">
                     Seu navegador não suporta vídeos.
                 </video>
                 <div class="feedback-stars">⭐⭐⭐⭐⭐</div>
-                <p class="feedback-text">"Esquece torrent e risco de vírus. O jogo puxa direto dos servidores oficiais, o download bateu no máximo aqui. Recomendo pra todo mundo, o catálogo é gigante!"</p>
+                <p class="feedback-text">"Esquece torrent e risco de vírus. O jogo puxa direto dos servidores oficiais, o download bateu no máximo aqui. Recomendo pra todo mundo!"</p>
                 <div class="feedback-author">
                     <div class="author-avatar">M</div>
-                    <span>Matheus S.</span>
+                    <span>Fabio</span>
                 </div>
             </div>
         </div>
@@ -582,8 +687,7 @@
     </footer>
 
     <!-- WHATSAPP FLUTUANTE -->
-    <!-- Coloque o seu número de WhatsApp com DDD no lugar de 5511999999999 -->
-    <a href="https://wa.me/5511996278610" class="whatsapp-float" target="_blank" aria-label="Fale conosco no WhatsApp">
+    <a href="https://wa.me/551199" class="whatsapp-float" target="_blank" aria-label="Fale conosco no WhatsApp">
         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
             <path d="M16.002 1.333a14.665 14.665 0 0 0-12.44 22.422L1.335 30.667l7.106-2.185a14.666 14.666 0 1 0 7.561-27.149zm0 26.966c-2.316 0-4.582-.596-6.55-1.724l-.47-.27-4.195 1.29 1.119-4.08-.31-.497A12.28 12.28 0 0 1 3.633 16C3.633 9.206 9.208 3.631 16.002 3.631c6.793 0 12.366 5.575 12.366 12.369 0 6.793-5.573 12.367-12.366 12.367zm6.757-9.255c-.37-.186-2.193-1.082-2.533-1.206-.34-.124-.587-.186-.834.186-.247.371-.958 1.206-1.174 1.453-.216.247-.432.278-.803.093-.37-.186-1.564-.576-2.98-1.625-1.1-.816-1.843-1.825-2.06-2.196-.216-.371-.023-.571.162-.756.166-.166.371-.433.556-.65.185-.216.247-.37.37-.618.124-.247.062-.464-.03-.65-.093-.186-.834-2.008-1.143-2.75-.3-.725-.605-.626-.834-.637-.216-.01-.464-.01-.711-.01a1.36 1.36 0 0 0-.988.464c-.34.37-1.297 1.267-1.297 3.09 0 1.824 1.328 3.586 1.513 3.833.185.247 2.615 3.99 6.335 5.597.886.381 1.578.61 2.117.781.892.282 1.7.242 2.339.146.715-.107 2.193-.896 2.502-1.761.309-.865.309-1.607.216-1.761-.093-.155-.34-.248-.711-.434z"/>
         </svg>
@@ -690,13 +794,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // TELA DE CARREGAMENTO
-        window.addEventListener('load', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if(splash) {
                     splash.style.opacity = '0';
                     splash.style.visibility = 'hidden';
-                    setTimeout(() => { splash.style.display = 'none'; if(typeof supabaseClient !== 'undefined' && dbAtivo) checkSession(); }, 800); 
+                    setTimeout(() => { 
+                        splash.style.display = 'none'; 
+                        if(typeof supabaseClient !== 'undefined' && dbAtivo) checkSession(); 
+                    }, 800); 
                 }
             }, 2000); 
         });
@@ -773,8 +880,8 @@
         // ============================================
         // COLAR CHAVES DO SUPABASE ABAIXO
         // ============================================
-        const supabaseUrl = 'https://xdropicachtygummacev.supabase.co/'; 
-        const supabaseKey = 'sb_publishable_C3VJpCPlca66mOVDV1Uhdw_3m_SpwRH';
+        const supabaseUrl = 'SUA_URL_DO_SUPABASE_AQUI'; 
+        const supabaseKey = 'SUA_CHAVE_ANON_DO_SUPABASE_AQUI';
         
         let dbAtivo = false;
         let supabaseClient;
