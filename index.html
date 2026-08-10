@@ -95,7 +95,7 @@
         .feature-box h4 { color: var(--accent-main); margin-top: 10px; }
         .feature-box p { font-size: 0.9rem; color: var(--text-muted); }
 
-        /* --- CARROSSEL INFINITO DE JOGOS (IMAGENS LOCAIS) --- */
+        /* --- CARROSSEL INFINITO DE JOGOS --- */
         .carousel-wrapper {
             position: relative;
             width: 100%;
@@ -215,7 +215,7 @@
         .plan-card ul li { margin-bottom: 12px; color: var(--text-muted); font-size: 0.95rem; }
 
         /* Botões */
-        .btn { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--accent-main) 0%, var(--accent-secondary) 100%); color: #000; font-weight: 900; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; text-align: center; }
+        .btn { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--accent-main) 0%, var(--accent-secondary) 100%); color: #000; font-weight: 900; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; text-align: center; margin-top: 5px;}
         .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px var(--title-glow); filter: brightness(1.1); }
         .btn.boss-btn { background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-main) 100%); color: var(--bg-color); }
         .btn-outline { background: transparent; border: 2px solid var(--accent-main); color: var(--accent-main); display: inline-block; padding: 15px 30px; border-radius: 8px; margin-top: 20px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; text-align: center; }
@@ -540,7 +540,10 @@
                     <li>✓ Direto na sua Steam</li>
                     <li>✓ Garantia de 7 dias</li>
                 </ul>
-                <a href="#" class="btn">ASSINAR AGORA</a>
+                <!-- BOTAO MENSAL -->
+                <a href="https://pay.cakto.com.br/38uuujj_1031737" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
+                <!-- BOTAO VITALÍCIO -->
+                <a href="https://pay.cakto.com.br/aax784t_1031733" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
             </div>
 
             <div class="plan-card glass-box plan-pro">
@@ -552,7 +555,10 @@
                     <li>✓ Direto na sua Steam</li>
                     <li>✓ Garantia de 7 dias</li>
                 </ul>
-                <a href="#" class="btn">ASSINAR AGORA</a>
+                <!-- BOTAO MENSAL -->
+                <a href="https://pay.cakto.com.br/vvbch2b_1031736" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
+                <!-- BOTAO VITALÍCIO -->
+                <a href="https://pay.cakto.com.br/38qr3wo_1031732" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
             </div>
 
             <div class="plan-card glass-box plan-gold" style="border: 1px solid var(--accent-main);">
@@ -565,7 +571,10 @@
                     <li>✓ Acesso a atualizações</li>
                     <li>✓ Suporte Prioritário</li>
                 </ul>
-                <a href="#" class="btn">ASSINAR AGORA</a>
+                <!-- BOTAO MENSAL -->
+                <a href="https://pay.cakto.com.br/4vwncjh_1031735" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
+                <!-- BOTAO VITALÍCIO -->
+                <a href="https://pay.cakto.com.br/fnn64sv_1031729" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
             </div>
 
             <div class="plan-card glass-box boss plan-esmeralda">
@@ -579,7 +588,10 @@
                     <li style="color: var(--accent-main); margin-top: 15px;">⭐ <strong>Jogos AAA Inclusos:</strong></li>
                     <li>Crimson Desert, GTA V, Hogwarts Legacy e muito mais.</li>
                 </ul>
-                <a href="#" class="btn boss-btn">DESBLOQUEAR TUDO</a>
+                <!-- BOTAO MENSAL -->
+                <a href="https://pay.cakto.com.br/bz9gcxz_1031734" class="btn boss-btn btn-mensal" target="_blank">DESBLOQUEAR MENSAL</a>
+                <!-- BOTAO VITALÍCIO -->
+                <a href="https://pay.cakto.com.br/ht39ghq_1031728" class="btn boss-btn btn-vitalicio" target="_blank" style="display: none;">DESBLOQUEAR VITALÍCIO</a>
             </div>
         </div>
     </section>
@@ -597,7 +609,7 @@
                     <li>✅ Milhares de gamers online</li>
                     <li>✅ Acesso gratuito sem spam</li>
                 </ul>
-                <a href="https://chat.whatsapp.com/F9rgtzlMhgyCg7OpEMp0h1" class="btn" style="background: #25D366; color: #000;" target="_blank">ENTRAR NO GRUPO VIP</a>
+                <a href="https://chat.whatsapp.com/FXsD4PWSTxVK3qQ0yJR77x" class="btn" style="background: #25D366; color: #000;" target="_blank">ENTRAR NO GRUPO VIP</a>
             </div>
             <div class="community-card glass-box">
                 <h3 style="color: #5865F2; margin-bottom: 15px; font-size: 1.5rem; font-family: 'Cinzel', serif; font-weight: 900; letter-spacing: 1px;">Suporte Técnico</h3>
@@ -822,7 +834,7 @@
             }
         }
 
-        // TOGGLE PREÇOS
+        // TOGGLE PREÇOS E BOTÕES DE CHECKOUT
         function setPricingMode(mode) {
             const toggle = document.getElementById('pricing-toggle');
             toggle.checked = (mode === 'vitalicio');
@@ -842,6 +854,18 @@
                     const value = isVitalicio ? priceElement.getAttribute('data-vitalicio') : priceElement.getAttribute('data-mensal');
                     priceElement.innerHTML = `${value}<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">${periodText}</small>`;
                 }
+            });
+
+            // NOVA LÓGICA: Esconde/Mostra os botões certos com os links separados
+            const botoesMensais = document.querySelectorAll('.btn-mensal');
+            const botoesVitalicios = document.querySelectorAll('.btn-vitalicio');
+
+            botoesMensais.forEach(btn => {
+                btn.style.display = isVitalicio ? 'none' : 'inline-block';
+            });
+            
+            botoesVitalicios.forEach(btn => {
+                btn.style.display = isVitalicio ? 'inline-block' : 'none';
             });
         }
 
@@ -880,8 +904,8 @@
         // ============================================
         // COLAR CHAVES DO SUPABASE ABAIXO
         // ============================================
-        const supabaseUrl = 'SUA_URL_DO_SUPABASE_AQUI'; 
-        const supabaseKey = 'SUA_CHAVE_ANON_DO_SUPABASE_AQUI';
+        const supabaseUrl = 'https://xdropicachtygummacev.supabase.co'; 
+        const supabaseKey = 'sb_publishable_C3VJpCPlca66mOVDV1Uhdw_3m_SpwRH';
         
         let dbAtivo = false;
         let supabaseClient;
