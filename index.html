@@ -263,6 +263,8 @@
         .account-table th { background: rgba(255,255,255,0.05); padding: 15px; color: var(--accent-main); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.1); }
         .account-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-color); }
         .status-badge { background: rgba(0, 255, 136, 0.2); color: var(--accent-main); padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid var(--accent-main); }
+        .status-danger { background: rgba(255, 77, 77, 0.15); color: #ff4d4d; border-color: #ff4d4d; }
+        .status-pending { background: rgba(255, 204, 0, 0.12); color: #ffcc00; border-color: #ffcc00; }
 
         /* Forms de Login */
         .auth-view { display: none; }
@@ -782,16 +784,10 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="account-purchases-body">
                         <tr>
-                            <td><strong>Plano Esmeralda (Vitalício)</strong></td>
-                            <td>07/08/2026</td>
-                            <td>#CHK-9928374</td>
-                            <td><span class="status-badge">Ativo</span></td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding-top: 30px;">
-                                Nenhuma outra compra encontrada.
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                Faça login para carregar suas compras.
                             </td>
                         </tr>
                     </tbody>
@@ -892,8 +888,130 @@
         function fecharLogin() { document.getElementById('login-modal').classList.remove('active'); document.getElementById('auth-message').textContent = ''; }
         function switchAuthView(viewId) { document.querySelectorAll('.auth-view').forEach(view => { view.classList.remove('active'); }); document.getElementById(viewId).classList.add('active'); document.getElementById('auth-message').textContent = ''; }
         
-        function abrirMinhaConta() { document.getElementById('account-modal').classList.add('active'); }
+        async function abrirMinhaConta() {
+            document.getElementById('account-modal').classList.add('active');
+            await carregarComprasDoCliente();
+        }
         function fecharMinhaConta() { document.getElementById('account-modal').classList.remove('active'); }
+
+        function escaparHtml(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatarDataCompra(data) {
+            if (!data) return '—';
+            const d = new Date(data);
+            if (Number.isNaN(d.getTime())) return escaparHtml(data);
+            return d.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function formatarStatus(status) {
+            const valor = String(status ?? 'Pendente').trim();
+            const normalizado = valor.toLowerCase();
+
+            let classe = 'status-badge';
+            if (['cancelado', 'cancelada', 'falhou', 'falhado', 'estornado', 'recusado'].includes(normalizado)) {
+                classe += ' status-danger';
+            } else if (['pendente', 'aguardando', 'processando'].includes(normalizado)) {
+                classe += ' status-pending';
+            }
+
+            return `<span class="${classe}">${escaparHtml(valor)}</span>`;
+        }
+
+        async function carregarComprasDoCliente() {
+            const corpo = document.getElementById('account-purchases-body');
+
+            if (!corpo) return;
+
+            corpo.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                        Carregando suas compras...
+                    </td>
+                </tr>`;
+
+            if (!dbAtivo) {
+                corpo.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #ff4d4d; padding: 30px;">
+                            Banco de dados não configurado.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            const { data: { user }, error: sessionError } = await supabaseClient.auth.getUser();
+
+            if (sessionError || !user) {
+                corpo.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            Faça login para visualizar suas compras.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            const { data: compras, error } = await supabaseClient
+                .from('compras')
+                .select(`
+                    plano_comprado,
+                    status_pagamento,
+                    codigo_pedido,
+                    data_compra,
+                    chave_entregue
+                `)
+                .eq('cliente_id', user.id)
+                .order('data_compra', { ascending: false });
+
+            if (error) {
+                console.error('Erro ao carregar compras:', error);
+                corpo.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #ff4d4d; padding: 30px;">
+                            Não foi possível carregar suas compras.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            if (!compras || compras.length === 0) {
+                corpo.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            Nenhuma compra encontrada para esta conta.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            corpo.innerHTML = compras.map(compra => {
+                const chaveEntregue = compra.chave_entregue ? 'Chave entregue' : 'Aguardando entrega';
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>${escaparHtml(compra.plano_comprado || 'Plano não informado')}</strong>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                                ${escaparHtml(chaveEntregue)}
+                            </div>
+                        </td>
+                        <td>${formatarDataCompra(compra.data_compra)}</td>
+                        <td>${escaparHtml(compra.codigo_pedido || '—')}</td>
+                        <td>${formatarStatus(compra.status_pagamento || 'Pendente')}</td>
+                    </tr>`;
+            }).join('');
+        }
 
         function mostrarMensagem(texto, tipo) {
             const msgBox = document.getElementById('auth-message');
