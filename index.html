@@ -200,19 +200,171 @@
         input:checked + .slider { background-color: rgba(0, 255, 136, 0.2); }
         input:checked + .slider:before { transform: translateX(26px); }
 
-        /* Planos */
-        .pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .plan-card { padding: 40px 30px; text-align: center; position: relative; display: flex; flex-direction: column; overflow: hidden; }
-        .plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; opacity: 0.15; transition: opacity 0.5s ease; }
-        .plan-card:hover::before { opacity: 0.35; }
-        .plan-hook::before { background: linear-gradient(135deg, #777777 0%, transparent 100%); }
-        .plan-pro::before { background: linear-gradient(135deg, #0088ff 0%, transparent 100%); }
-        .plan-gold::before { background: linear-gradient(135deg, #ffcc00 0%, transparent 100%); }
-        .plan-esmeralda::before { background: linear-gradient(135deg, var(--accent-main) 0%, transparent 100%); }
-        .plan-card h3 { font-size: 1.8rem; margin-bottom: 10px; color: var(--text-color); text-transform: uppercase; font-family: 'Cinzel', serif; font-weight: 900;}
-        .plan-card .price { font-size: 2.5rem; font-weight: bold; margin: 20px 0; color: var(--accent-main); transition: 0.3s; }
-        .plan-card ul { list-style: none; margin-bottom: 30px; text-align: left; flex-grow: 1; }
-        .plan-card ul li { margin-bottom: 12px; color: var(--text-muted); font-size: 0.95rem; }
+        /* Planos — visual premium */
+        .pricing {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
+            max-width: 980px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+        .plan-card {
+            padding: 58px 34px 34px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 520px;
+            isolation: isolate;
+            border: 1px solid rgba(255,255,255,0.10);
+            background:
+                radial-gradient(circle at 50% -10%, rgba(255,255,255,0.12), transparent 38%),
+                linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018) 48%, rgba(0,0,0,0.18));
+            box-shadow:
+                0 20px 55px rgba(0,0,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.10),
+                inset 0 -1px 0 rgba(0,0,0,0.65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            opacity: 0.95;
+            transition: opacity 0.35s ease, transform 0.5s ease;
+        }
+        .plan-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 12%;
+            right: 12%;
+            height: 2px;
+            border-radius: 999px;
+            opacity: 0.9;
+            box-shadow: 0 0 18px currentColor;
+            z-index: 1;
+        }
+        .plan-card:hover {
+            transform: translateY(-10px);
+        }
+        .plan-card:hover::before {
+            opacity: 1;
+            transform: scale(1.04);
+        }
+        .plan-fatality {
+            border-color: rgba(255, 204, 0, 0.30);
+            color: #ffcc00;
+        }
+        .plan-fatality::before {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255,204,0,0.20), transparent 38%),
+                linear-gradient(160deg, rgba(255,204,0,0.14), transparent 50%),
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+        }
+        .plan-fatality::after {
+            background: linear-gradient(90deg, transparent, #ffcc00, transparent);
+            color: #ffcc00;
+        }
+        .plan-brutality {
+            border-color: rgba(0,255,136,0.35);
+            color: var(--accent-main);
+            box-shadow:
+                0 24px 65px rgba(0,0,0,0.52),
+                0 0 0 1px rgba(0,255,136,0.06),
+                0 0 38px rgba(0,255,136,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.10);
+        }
+        .plan-brutality::before {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(0,255,136,0.18), transparent 40%),
+                linear-gradient(160deg, rgba(0,204,102,0.14), transparent 50%),
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+        }
+        .plan-brutality::after {
+            background: linear-gradient(90deg, transparent, var(--accent-main), transparent);
+            color: var(--accent-main);
+        }
+        .plan-card h3 {
+            font-size: 2.25rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 22px rgba(0,0,0,0.55);
+        }
+        .plan-card > p {
+            min-height: 26px;
+            margin-bottom: 4px;
+        }
+        .plan-card .price {
+            font-size: clamp(2.8rem, 4vw, 3.7rem);
+            line-height: 1;
+            font-weight: 900;
+            margin: 26px 0 28px;
+            color: currentColor;
+            letter-spacing: -1px;
+            text-shadow: 0 0 24px currentColor;
+            transition: transform 0.35s ease;
+        }
+        .plan-card:hover .price {
+            transform: scale(1.04);
+        }
+        .plan-card .price small {
+            text-shadow: none;
+        }
+        .plan-card ul {
+            list-style: none;
+            margin: 0 0 30px;
+            padding: 0;
+            text-align: left;
+            flex-grow: 1;
+            display: grid;
+            gap: 12px;
+        }
+        .plan-card ul li {
+            margin: 0;
+            padding: 13px 14px;
+            color: var(--text-muted);
+            font-size: 0.97rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.025);
+            transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+        }
+        .plan-card ul li:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.12);
+            transform: translateX(3px);
+        }
+        .plan-card ul li strong {
+            color: var(--text-color);
+        }
+
+        /* Selos premium */
+        .badge {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 7px 18px;
+            border-radius: 999px;
+            font-weight: 900;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            z-index: 4;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
 
         /* Botões */
         .btn { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--accent-main) 0%, var(--accent-secondary) 100%); color: #000; font-weight: 900; border-radius: 8px; width: 100%; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; text-align: center; margin-top: 5px;}
@@ -221,7 +373,6 @@
         .btn-outline { background: transparent; border: 2px solid var(--accent-main); color: var(--accent-main); display: inline-block; padding: 15px 30px; border-radius: 8px; margin-top: 20px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; text-align: center; }
         .btn-outline:hover { background: var(--accent-main); color: var(--bg-color); box-shadow: 0 5px 20px var(--title-glow); }
         
-        .badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--accent-main); color: var(--bg-color); padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; white-space: nowrap; }
 
         /* Comunidade e Garantia */
         .community-section { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; }
@@ -282,7 +433,792 @@
         #auth-message { margin-top: 15px; font-weight: bold; font-size: 0.9rem; min-height: 20px; }
         .msg-success { color: var(--accent-main); }
         .msg-error { color: #ff4d4d; }
-    </style>
+
+        @media (max-width: 820px) {
+            .pricing { grid-template-columns: 1fr; max-width: 560px; }
+            .plan-card { min-height: 0; }
+        }
+    
+
+        /* =========================================================
+           FATALITY STORE — VISUAL FIGHTING GAME PREMIUM
+           Estética inspirada em arenas de combate, metal, neon e
+           elementos orientais, sem copiar arte proprietária.
+        ========================================================== */
+        :root {
+            --bg-color: #020304;
+            --text-color: #f5f3ed;
+            --text-muted: #a6a8aa;
+            --accent-main: #00f0a0;
+            --accent-secondary: #00b97a;
+            --title-grad-1: #f4f0e6;
+            --title-grad-2: #00f0a0;
+            --title-glow: rgba(0, 240, 160, 0.32);
+            --combat-gold: #d6b45a;
+            --combat-red: #c52a2a;
+            --steel: #16191b;
+        }
+
+        html {
+            background: #020304;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 12%, rgba(0, 240, 160, 0.07), transparent 28%),
+                radial-gradient(circle at 84% 18%, rgba(197, 42, 42, 0.08), transparent 26%),
+                linear-gradient(180deg, #020304 0%, #07090a 38%, #020304 100%);
+            color: var(--text-color);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(to bottom, black 0%, transparent 88%);
+        }
+
+        .aurora-bg {
+            background:
+                radial-gradient(circle at 8% 22%, rgba(0, 240, 160, 0.08), transparent 35%),
+                radial-gradient(circle at 92% 34%, rgba(197, 42, 42, 0.07), transparent 32%);
+            filter: blur(90px);
+            opacity: 0.8;
+        }
+
+        .glass-box {
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)),
+                rgba(7,9,10,0.76);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-top-color: rgba(255,255,255,0.16);
+            border-left-color: rgba(255,255,255,0.11);
+            box-shadow:
+                0 22px 55px rgba(0,0,0,0.58),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(22px) saturate(125%);
+            -webkit-backdrop-filter: blur(22px) saturate(125%);
+            border-radius: 14px;
+        }
+
+        .glass-box:hover {
+            border-color: rgba(0, 240, 160, 0.45);
+            box-shadow:
+                0 28px 70px rgba(0,0,0,0.68),
+                0 0 30px rgba(0,240,160,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .top-nav {
+            top: 24px;
+            right: 28px;
+        }
+
+        .btn-login-top {
+            background: rgba(4,7,8,0.76);
+            border: 1px solid rgba(0,240,160,0.65);
+            box-shadow: 0 0 0 1px rgba(0,240,160,0.08), 0 10px 28px rgba(0,0,0,0.35);
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .mk-header {
+            height: 560px;
+            border-bottom: 1px solid rgba(0,240,160,0.55);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+        }
+
+        .mk-header::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0;
+            height: 95px;
+            z-index: 3;
+            background: linear-gradient(to top, #020304, transparent);
+            pointer-events: none;
+        }
+
+        .video-background {
+            opacity: 0.52;
+            filter: saturate(0.75) contrast(1.12) brightness(0.68);
+        }
+
+        .bg-overlay {
+            background:
+                linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.72) 55%, rgba(2,3,4,0.98) 100%),
+                linear-gradient(90deg, rgba(0,240,160,0.04), transparent 45%, rgba(197,42,42,0.05));
+        }
+
+        .layer-text h1 {
+            font-size: clamp(3.2rem, 8vw, 6.5rem);
+            letter-spacing: 9px;
+            text-shadow:
+                0 0 8px rgba(0,240,160,0.14),
+                0 12px 38px rgba(0,0,0,0.9);
+        }
+
+        .mk-dragon-logo {
+            height: 132px;
+            filter:
+                drop-shadow(0 0 16px rgba(0,240,160,0.3))
+                drop-shadow(0 18px 28px rgba(0,0,0,0.8));
+        }
+
+        .hero {
+            padding-top: 82px;
+            padding-bottom: 42px;
+        }
+
+        .hero h1 {
+            text-transform: uppercase;
+            font-size: clamp(2.25rem, 4.4vw, 4.3rem);
+            letter-spacing: 1px;
+            line-height: 1.05;
+        }
+
+        .hero h1 span {
+            color: var(--accent-main);
+            text-shadow: 0 0 25px rgba(0,240,160,0.18);
+        }
+
+        .section-title {
+            position: relative;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 18px;
+            letter-spacing: 4px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 16%;
+            right: 16%;
+            bottom: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--combat-gold), var(--accent-main), transparent);
+            box-shadow: 0 0 18px rgba(0,240,160,0.15);
+        }
+
+        .section-title span {
+            color: var(--accent-main);
+        }
+
+        .features {
+            gap: 18px;
+        }
+
+        .feature-box {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            min-height: 155px;
+            padding: 28px 22px;
+        }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(214,180,90,0.06), transparent 45%, rgba(0,240,160,0.045));
+            pointer-events: none;
+        }
+
+        .carousel-wrapper {
+            margin-top: 58px;
+            padding: 28px 0 42px;
+            border-top: 1px solid rgba(255,255,255,0.055);
+            border-bottom: 1px solid rgba(255,255,255,0.055);
+            background: linear-gradient(180deg, rgba(255,255,255,0.018), transparent);
+        }
+
+        .carousel-item {
+            border-radius: 9px;
+            border: 1px solid rgba(214,180,90,0.16);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.52);
+        }
+
+        .pricing {
+            gap: 26px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .plan-card {
+            min-height: 570px;
+            padding: 82px 38px 34px;
+            border-radius: 12px;
+            clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+        }
+
+        .plan-card::before {
+            opacity: 1;
+        }
+
+        .plan-fatality {
+            color: var(--combat-gold);
+            border-color: rgba(214,180,90,0.38);
+            box-shadow:
+                0 28px 70px rgba(0,0,0,0.55),
+                inset 0 1px 0 rgba(255,240,190,0.09),
+                0 0 35px rgba(214,180,90,0.05);
+        }
+
+        .plan-fatality::before {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(214,180,90,0.18), transparent 34%),
+                linear-gradient(145deg, rgba(214,180,90,0.12), transparent 46%),
+                linear-gradient(180deg, rgba(18,19,16,0.96), rgba(5,6,7,0.98));
+        }
+
+        .plan-fatality::after {
+            background: linear-gradient(90deg, transparent, var(--combat-gold), transparent);
+            color: var(--combat-gold);
+        }
+
+        .plan-brutality {
+            color: var(--accent-main);
+            border-color: rgba(0,240,160,0.42);
+            box-shadow:
+                0 30px 78px rgba(0,0,0,0.56),
+                0 0 42px rgba(0,240,160,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.10);
+        }
+
+        .plan-brutality::before {
+            background:
+                radial-gradient(circle at 50% 0%, rgba(0,240,160,0.17), transparent 35%),
+                radial-gradient(circle at 100% 100%, rgba(197,42,42,0.12), transparent 34%),
+                linear-gradient(150deg, rgba(0,185,122,0.12), transparent 50%),
+                linear-gradient(180deg, rgba(7,19,15,0.96), rgba(3,7,6,0.99));
+        }
+
+        .plan-brutality::after {
+            background: linear-gradient(90deg, transparent, var(--accent-main), transparent);
+            color: var(--accent-main);
+        }
+
+        .plan-card h3 {
+            font-size: 2.7rem;
+            letter-spacing: 6px;
+            margin-bottom: 12px;
+            text-shadow: 0 8px 25px rgba(0,0,0,0.55);
+        }
+
+        .plan-card .price {
+            font-size: 3.15rem;
+            margin: 22px 0 28px;
+            letter-spacing: -1px;
+        }
+
+        .plan-card .price small {
+            letter-spacing: 1px;
+        }
+
+        .plan-card ul {
+            margin-bottom: 32px;
+        }
+
+        .plan-card ul li {
+            padding: 12px 0;
+            margin: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.055);
+        }
+
+        .badge {
+            top: 18px;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+            clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+        }
+
+        .plan-fatality .badge {
+            background: linear-gradient(135deg, #f0d986, #a68532);
+            color: #12100a;
+        }
+
+        .plan-brutality .badge {
+            background: linear-gradient(135deg, #00f0a0, #00a86f);
+            color: #00120b;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            padding: 17px 26px;
+            letter-spacing: 1.4px;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+            transform: skewX(-22deg);
+            transition: left 0.65s ease;
+        }
+
+        .btn:hover::before {
+            left: 140%;
+        }
+
+        .plan-fatality .btn {
+            background: linear-gradient(135deg, #d6b45a, #f0db8b);
+            color: #11100c;
+            box-shadow: 0 10px 28px rgba(214,180,90,0.18);
+        }
+
+        .plan-brutality .btn {
+            background: linear-gradient(135deg, #00a96f, #00f0a0);
+            color: #00120b;
+            box-shadow: 0 10px 30px rgba(0,240,160,0.18);
+        }
+
+        .community-card,
+        .guarantee,
+        .faq-item,
+        .app-section {
+            border-radius: 10px;
+        }
+
+        .guarantee {
+            border-color: rgba(214,180,90,0.17);
+            background:
+                radial-gradient(circle at center, rgba(214,180,90,0.08), transparent 58%),
+                rgba(7,9,10,0.74);
+        }
+
+        .faq-item:hover,
+        .community-card:hover {
+            border-color: rgba(0,240,160,0.3);
+        }
+
+        footer {
+            background:
+                linear-gradient(180deg, rgba(4,6,7,0.88), #010203),
+                radial-gradient(circle at 50% 0%, rgba(0,240,160,0.05), transparent 40%) !important;
+            border-top-color: rgba(214,180,90,0.12) !important;
+        }
+
+        @media (max-width: 768px) {
+            .mk-header { height: 470px; }
+            .layer-text h1 { letter-spacing: 4px; }
+            .mk-dragon-logo { height: 95px; }
+            .plan-card { min-height: 0; padding: 78px 24px 28px; }
+            .plan-card h3 { font-size: 2.2rem; letter-spacing: 4px; }
+            .plan-card .price { font-size: 2.55rem; }
+            .pricing { gap: 18px; }
+        }
+
+    
+
+/* ============================================================
+   FATALITY STORE — VISUAL MK1 INSPIRED
+   Atmosfera de arena premium: jade, bronze, obsidiana e seda.
+   Não altera a lógica do site, apenas a apresentação.
+   ============================================================ */
+:root {
+    --mk-black: #050605;
+    --mk-ink: #0b0e0c;
+    --mk-obsidian: #111513;
+    --mk-jade: #10d987;
+    --mk-jade-bright: #27ffac;
+    --mk-jade-dark: #08764b;
+    --mk-bronze: #b98a4f;
+    --mk-gold: #e1bb78;
+    --mk-red: #a23d36;
+    --mk-stone: #d7d0c3;
+    --mk-muted: #9c9a94;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    background:
+        radial-gradient(circle at 50% -10%, rgba(25, 145, 94, .18), transparent 35%),
+        radial-gradient(circle at 100% 30%, rgba(184, 138, 79, .10), transparent 28%),
+        linear-gradient(180deg, #040505 0%, #070908 40%, #050605 100%);
+    color: #f7f4ed;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+    opacity: .22;
+    background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 90%);
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -4;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(31, 214, 136, .07), transparent 20%),
+        radial-gradient(circle at 85% 18%, rgba(225, 187, 120, .06), transparent 22%);
+    mix-blend-mode: screen;
+}
+
+.aurora-bg {
+    opacity: .55;
+    filter: blur(110px);
+}
+
+/* topo */
+.top-nav {
+    top: 24px;
+    right: 28px;
+}
+
+.btn-login-top,
+#user-greeting {
+    border: 1px solid rgba(225,187,120,.65);
+    background: linear-gradient(180deg, rgba(10,13,11,.92), rgba(5,7,6,.86));
+    color: #f4eee3;
+    box-shadow: 0 8px 30px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.03);
+    letter-spacing: 2px;
+}
+
+.btn-login-top:hover,
+#user-greeting:hover {
+    background: linear-gradient(180deg, rgba(37,255,172,.18), rgba(8,118,75,.20));
+    color: var(--mk-jade-bright);
+    border-color: var(--mk-jade);
+    box-shadow: 0 0 24px rgba(16,217,135,.18), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+
+/* hero / header */
+.mk-header {
+    height: 640px;
+    border-bottom: 1px solid rgba(225,187,120,.35);
+    box-shadow: inset 0 -80px 100px rgba(0,0,0,.72);
+}
+
+.video-background {
+    opacity: .62;
+    filter: saturate(.85) contrast(1.08) brightness(.82);
+}
+
+.bg-overlay {
+    background:
+        radial-gradient(circle at 50% 42%, transparent 0 20%, rgba(0,0,0,.28) 54%, rgba(0,0,0,.86) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,.10), rgba(0,0,0,.90));
+}
+
+.mk-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background:
+        linear-gradient(120deg, transparent 0 42%, rgba(225,187,120,.06) 42.1% 42.5%, transparent 42.7%),
+        linear-gradient(300deg, transparent 0 56%, rgba(16,217,135,.05) 56.1% 56.45%, transparent 56.7%);
+    mix-blend-mode: screen;
+}
+
+.layer-text h1 {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    letter-spacing: 8px;
+    text-shadow: 0 0 30px rgba(16,217,135,.15), 0 12px 44px rgba(0,0,0,.9);
+    background: linear-gradient(120deg, #f1e5ca 0%, #ffffff 18%, #22ffad 48%, #c8a56a 82%, #fff2d8 100%);
+    background-size: 240% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.mk-dragon-logo {
+    filter: drop-shadow(0 0 24px rgba(16,217,135,.22)) drop-shadow(0 14px 35px rgba(0,0,0,.7));
+}
+
+/* cards / glass */
+.glass-box {
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.015) 38%, rgba(0,0,0,.20) 100%),
+        linear-gradient(180deg, rgba(13,18,15,.88), rgba(7,10,9,.83));
+    border: 1px solid rgba(225,187,120,.18);
+    border-top-color: rgba(225,187,120,.34);
+    border-left-color: rgba(255,255,255,.10);
+    border-radius: 16px;
+    box-shadow:
+        0 24px 70px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.05),
+        inset 0 -20px 40px rgba(0,0,0,.14);
+    backdrop-filter: blur(22px);
+}
+
+.glass-box:hover {
+    border-color: rgba(16,217,135,.42);
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.62),
+        0 0 32px rgba(16,217,135,.09),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.section-title {
+    position: relative;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: 4px;
+    color: #f7f3ea;
+    text-shadow: 0 8px 30px rgba(0,0,0,.6);
+}
+
+.section-title::after {
+    content: "";
+    display: block;
+    width: 110px;
+    height: 2px;
+    margin: 16px auto 0;
+    background: linear-gradient(90deg, transparent, var(--mk-gold), var(--mk-jade), transparent);
+    opacity: .8;
+}
+
+.section-title span { color: var(--mk-jade-bright); }
+
+/* hero */
+.hero {
+    padding-top: 82px;
+    padding-bottom: 40px;
+}
+
+.hero h1 {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    text-shadow: 0 12px 35px rgba(0,0,0,.8);
+}
+
+.hero h1 span {
+    background: linear-gradient(90deg, #fff2d8, var(--mk-gold), var(--mk-jade-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* features */
+.feature-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-box::before {
+    content: "";
+    position: absolute;
+    inset: auto -20% -40% -20%;
+    height: 120px;
+    background: radial-gradient(circle, rgba(16,217,135,.11), transparent 60%);
+}
+
+.feature-box h4 { color: var(--mk-jade-bright); letter-spacing: 1px; }
+
+/* carrossel */
+.carousel-wrapper {
+    margin-top: 24px;
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.carousel-item {
+    border: 1px solid rgba(225,187,120,.24);
+    box-shadow: 0 12px 35px rgba(0,0,0,.52), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.carousel-item::after {
+    background: linear-gradient(to top, rgba(0,0,0,.96), rgba(0,0,0,.08));
+    color: #f0dfbf;
+}
+
+/* planos */
+.pricing {
+    align-items: stretch;
+    gap: 28px;
+}
+
+.plan-card {
+    min-height: 540px;
+    padding: 76px 34px 34px;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 20px;
+}
+
+.plan-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.06), transparent 26%),
+        linear-gradient(315deg, rgba(255,255,255,.03), transparent 30%);
+}
+
+.plan-card.plan-gold {
+    border-color: rgba(225,187,120,.45) !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(225,187,120,.14), transparent 34%),
+        linear-gradient(180deg, rgba(37,30,18,.82), rgba(8,10,9,.94));
+}
+
+.plan-card.plan-esmeralda {
+    border-color: rgba(16,217,135,.46) !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(16,217,135,.16), transparent 34%),
+        linear-gradient(180deg, rgba(7,44,31,.86), rgba(7,11,9,.95));
+}
+
+.plan-card h3 {
+    font-size: 2.15rem;
+    letter-spacing: 3px;
+    color: #f9f3e6;
+    text-shadow: 0 8px 24px rgba(0,0,0,.7);
+}
+
+.plan-card.plan-gold h3 {
+    color: var(--mk-gold);
+}
+
+.plan-card.plan-esmeralda h3 {
+    color: var(--mk-jade-bright);
+}
+
+.plan-card .price {
+    font-size: clamp(2.8rem, 4vw, 4rem);
+    margin: 22px 0 26px;
+    text-shadow: 0 0 28px rgba(16,217,135,.14);
+}
+
+.plan-gold .price { color: var(--mk-gold); }
+.plan-esmeralda .price { color: var(--mk-jade-bright); }
+
+.plan-card ul li {
+    padding: 11px 0;
+    margin: 0;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.plan-card ul li:last-child { border-bottom: 0; }
+
+.plan-card .badge {
+    top: 18px;
+    left: 50%;
+    padding: 7px 22px;
+    background: linear-gradient(90deg, #c59b63, #f0cf91, #c59b63);
+    color: #17110b;
+    box-shadow: 0 8px 26px rgba(225,187,120,.18);
+    letter-spacing: 1px;
+}
+
+.plan-esmeralda .badge {
+    background: linear-gradient(90deg, #0e9c63, #27ffac, #0e9c63) !important;
+    box-shadow: 0 8px 26px rgba(16,217,135,.18);
+}
+
+.btn {
+    border-radius: 10px;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 10px 26px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+.plan-gold .btn {
+    background: linear-gradient(135deg, #c69a61, #f0ce8d 48%, #a87a44);
+    color: #15100a;
+}
+
+.plan-esmeralda .btn {
+    background: linear-gradient(135deg, #0d8d59, #24f3a2 48%, #08613e);
+    color: #03110b;
+}
+
+.btn:hover {
+    transform: translateY(-4px) scale(1.015);
+    filter: brightness(1.08) saturate(1.05);
+}
+
+/* comunidade / garantia */
+.community-card {
+    border-radius: 18px;
+}
+
+.guarantee {
+    border-color: rgba(225,187,120,.24);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(225,187,120,.10), transparent 48%),
+        linear-gradient(180deg, rgba(14,17,15,.92), rgba(6,8,7,.96));
+}
+
+/* FAQ */
+.faq-item {
+    background: linear-gradient(180deg, rgba(15,18,16,.90), rgba(8,10,9,.92));
+    border-color: rgba(225,187,120,.12);
+}
+
+.faq-item.active {
+    border-color: rgba(16,217,135,.34);
+    box-shadow: 0 16px 40px rgba(0,0,0,.35), 0 0 20px rgba(16,217,135,.06);
+}
+
+.faq-icon { color: var(--mk-gold); }
+
+/* modais */
+.modal-overlay {
+    background: rgba(0,0,0,.84);
+    backdrop-filter: blur(18px);
+}
+
+.modal-box {
+    border-color: rgba(225,187,120,.25);
+}
+
+.input-group input {
+    background: rgba(1,3,2,.72);
+    border-color: rgba(225,187,120,.12);
+}
+
+.input-group input:focus {
+    border-color: var(--mk-jade);
+    box-shadow: 0 0 22px rgba(16,217,135,.11);
+}
+
+/* rodapé */
+footer {
+    background: linear-gradient(180deg, rgba(4,6,5,.58), rgba(1,2,2,.95)) !important;
+    border-top-color: rgba(225,187,120,.16) !important;
+}
+
+@media (max-width: 768px) {
+    .mk-header { height: 520px; }
+    .top-nav { right: 15px; top: 15px; }
+    .plan-card { min-height: auto; }
+    .hero { padding-top: 55px; }
+    .section-title { letter-spacing: 2px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -322,8 +1258,8 @@
     <!-- SEÇÃO HERO -->
     <section class="hero container">
         <span style="font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-main);">🕹️ Missão Iniciada</span>
-        <h1>A maior biblioteca de jogos da Steam <br><span>por menos de R$ 10/mês.</span></h1>
-        <p>Baixe e jogue agora — packs com centenas de jogos adicionados <strong>direto na sua Steam</strong>.</p>
+        <h1>UMA COLEÇÃO DE JOGOS <br><span>COM ACESSO VITALÍCIO.</span></h1>
+        <p>Escolha seu nível de combate e desbloqueie seu acesso <strong>de forma vitalícia</strong>.</p>
     </section>
 
     <!-- VÍDEO DE DEMONSTRAÇÃO -->
@@ -484,7 +1420,7 @@
                     Seu navegador não suporta vídeos.
                 </video>
                 <div class="feedback-stars">⭐⭐⭐⭐⭐</div>
-                <p class="feedback-text">"Mano, achei que era caô, mas funcionou de primeira! Peguei o plano Esmeralda e já baixei o GTA V direto no meu app da Steam."</p>
+                <p class="feedback-text">"Mano, achei que era caô, mas funcionou de primeira! Peguei o plano Brutality e já baixei o GTA V direto no meu app da Steam."</p>
                 <div class="feedback-author">
                     <div class="author-avatar">L</div>
                     <span>Ramiro</span>
@@ -521,80 +1457,39 @@
 
     <!-- PLANOS DE PREÇOS -->
     <section class="container">
-        <h2 class="section-title">ESCOLHA SEU <span>PLANO</span></h2>
+        <h2 class="section-title">ESCOLHA SEU <span>ARSENAL</span></h2>
         
-        <div class="pricing-toggle-wrapper">
-            <span id="label-mensal" class="toggle-label active" onclick="setPricingMode('mensal')">Mensal</span>
-            <label class="switch">
-                <input type="checkbox" id="pricing-toggle" onchange="togglePricing()">
-                <span class="slider"></span>
-            </label>
-            <span id="label-vitalicio" class="toggle-label" onclick="setPricingMode('vitalicio')">Vitalício</span>
-        </div>
-
         <div class="pricing">
-            <div class="plan-card glass-box plan-hook">
-                <h3>Plano Hook</h3>
-                <p style="color: var(--text-muted);">Para quem quer começar.</p>
-                <div class="price" id="price-hook" data-mensal="R$ 9,90" data-vitalicio="R$ 29,90">R$ 9,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/mês</small></div>
-                <ul>
-                    <li>✓ Pack com 500 jogos</li>
-                    <li>✓ Direto na sua Steam</li>
-                    <li>✓ Garantia de 7 dias</li>
-                </ul>
-                <!-- BOTAO MENSAL -->
-                <a href="https://pay.cakto.com.br/38uuujj_1031737" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
-                <!-- BOTAO VITALÍCIO -->
-                <a href="https://pay.cakto.com.br/aax784t_1031733" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
-            </div>
 
-            <div class="plan-card glass-box plan-pro">
-                <h3>Plano Pro</h3>
-                <p style="color: var(--text-muted);">Acesso imediato e variedade.</p>
-                <div class="price" id="price-pro" data-mensal="R$ 14,90" data-vitalicio="R$ 39,90">R$ 14,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/mês</small></div>
-                <ul>
-                    <li>✓ Pack com 700 jogos</li>
-                    <li>✓ Direto na sua Steam</li>
-                    <li>✓ Garantia de 7 dias</li>
-                </ul>
-                <!-- BOTAO MENSAL -->
-                <a href="https://pay.cakto.com.br/vvbch2b_1031736" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
-                <!-- BOTAO VITALÍCIO -->
-                <a href="https://pay.cakto.com.br/38qr3wo_1031732" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
-            </div>
-
-            <div class="plan-card glass-box plan-gold" style="border: 1px solid var(--accent-main);">
+            <!-- FATALITY -->
+            <div class="plan-card glass-box plan-fatality">
                 <div class="badge">MAIS VENDIDO</div>
-                <h3>Plano Gold</h3>
+                <h3>FATALITY</h3>
                 <p style="color: var(--text-muted);">O melhor custo-benefício.</p>
-                <div class="price" id="price-gold" data-mensal="R$ 19,90" data-vitalicio="R$ 59,90">R$ 19,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/mês</small></div>
+                <div class="price" id="price-fatality" data-vitalicio="R$ 59,90">R$ 59,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/pagamento</small></div>
                 <ul>
                     <li>✓ Pack com 1.000 jogos</li>
                     <li>✓ Acesso a atualizações</li>
                     <li>✓ Suporte Prioritário</li>
                 </ul>
-                <!-- BOTAO MENSAL -->
-                <a href="https://pay.cakto.com.br/4vwncjh_1031735" class="btn btn-mensal" target="_blank">ASSINAR MENSAL</a>
-                <!-- BOTAO VITALÍCIO -->
-                <a href="https://pay.cakto.com.br/fnn64sv_1031729" class="btn btn-vitalicio" target="_blank" style="display: none;">COMPRAR VITALÍCIO</a>
+                <a href="#" class="btn btn-vitalicio" data-plano="fatality" data-tipo="vitalicio" onclick="iniciarPagamento(event, 'fatality')">COMPRAR FATALITY</a>
             </div>
 
-            <div class="plan-card glass-box boss plan-esmeralda">
+            <!-- BRUTALITY -->
+            <div class="plan-card glass-box boss plan-brutality">
                 <div class="badge" style="background: var(--accent-secondary); color: var(--bg-color);">O BOSS</div>
-                <h3>Plano Esmeralda</h3>
+                <h3>BRUTALITY</h3>
                 <p style="color: var(--text-muted);">Acesso Exclusivo Boss</p>
-                <div class="price" id="price-esmeralda" data-mensal="R$ 49,90" data-vitalicio="R$ 159,90">R$ 49,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/mês</small></div>
+                <div class="price" id="price-brutality" data-vitalicio="R$ 159,90">R$ 159,90<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;" class="price-period">/pagamento</small></div>
                 <ul>
                     <li>⚡ 41.000 Jogos Disponíveis</li>
                     <li>✓ Atualização Gratuita</li>
                     <li style="color: var(--accent-main); margin-top: 15px;">⭐ <strong>Jogos AAA Inclusos:</strong></li>
                     <li>Crimson Desert, GTA V, Hogwarts Legacy e muito mais.</li>
                 </ul>
-                <!-- BOTAO MENSAL -->
-                <a href="https://pay.cakto.com.br/bz9gcxz_1031734" class="btn boss-btn btn-mensal" target="_blank">DESBLOQUEAR MENSAL</a>
-                <!-- BOTAO VITALÍCIO -->
-                <a href="https://pay.cakto.com.br/ht39ghq_1031728" class="btn boss-btn btn-vitalicio" target="_blank" style="display: none;">DESBLOQUEAR VITALÍCIO</a>
+                <a href="#" class="btn boss-btn btn-vitalicio" data-plano="brutality" data-tipo="vitalicio" onclick="iniciarPagamento(event, 'brutality')">DESBLOQUEAR BRUTALITY</a>
             </div>
+
         </div>
     </section>
 
@@ -797,8 +1692,33 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- MODAL CHECKOUT MERCADO PAGO -->
+    <!-- ========================================== -->
+    <div id="payment-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-box glass-box" style="max-width: 760px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 28px;">
+            <span class="close-modal" onclick="fecharPagamento()">&times;</span>
+            <div style="text-align:center; margin-bottom:18px;">
+                <div style="font-family:'Cinzel',serif; color:var(--accent-main); font-size:.85rem; letter-spacing:2px; text-transform:uppercase;">Fatality Store</div>
+                <h2 id="payment-modal-title" style="margin-bottom:6px;">FINALIZAR COMPRA</h2>
+                <p id="payment-modal-subtitle" style="color:var(--text-muted); margin:0;"></p>
+            </div>
+            <div id="payment-status" style="display:none; margin-bottom:16px; padding:12px 14px; border-radius:10px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.08); color:var(--text-muted);"></div>
+            <div id="paymentBrick_container"></div>
+            <div id="pix-result" style="display:none; text-align:center; padding:18px;">
+                <h3 style="font-family:'Cinzel',serif; margin-bottom:12px;">PIX GERADO</h3>
+                <p style="color:var(--text-muted); margin-bottom:15px;">Escaneie o QR Code ou use o Pix Copia e Cola.</p>
+                <img id="pix-qr" alt="QR Code Pix" style="max-width:260px; width:100%; border-radius:14px; background:#fff; padding:10px;">
+                <textarea id="pix-copy" readonly style="width:100%; min-height:110px; margin-top:16px; padding:12px; border-radius:10px; background:#050505; color:#fff; border:1px solid rgba(255,255,255,.12); resize:vertical;"></textarea>
+                <button class="btn" type="button" onclick="copiarPix()" style="margin-top:12px;">COPIAR PIX</button>
+                <button class="btn-outline" type="button" onclick="fecharPagamento()" style="margin-top:12px;">VOLTAR À LOJA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- SCRIPTS -->
     <!-- ========================================== -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // TELA DE CARREGAMENTO
@@ -830,38 +1750,22 @@
             }
         }
 
-        // TOGGLE PREÇOS E BOTÕES DE CHECKOUT
-        function setPricingMode(mode) {
-            const toggle = document.getElementById('pricing-toggle');
-            toggle.checked = (mode === 'vitalicio');
-            togglePricing();
-        }
+        // PLANOS SOMENTE VITALÍCIOS
+        function configurarPlanos() {
+            const planos = [
+                { id: 'price-fatality', preco: 'R$ 59,90' },
+                { id: 'price-brutality', preco: 'R$ 159,90' }
+            ];
 
-        function togglePricing() {
-            const isVitalicio = document.getElementById('pricing-toggle').checked;
-            document.getElementById('label-mensal').classList.toggle('active', !isVitalicio);
-            document.getElementById('label-vitalicio').classList.toggle('active', isVitalicio);
-
-            const plans = ['hook', 'pro', 'gold', 'esmeralda'];
-            plans.forEach(plan => {
-                const priceElement = document.getElementById(`price-${plan}`);
-                if(priceElement) {
-                    const periodText = isVitalicio ? '/único' : '/mês';
-                    const value = isVitalicio ? priceElement.getAttribute('data-vitalicio') : priceElement.getAttribute('data-mensal');
-                    priceElement.innerHTML = `${value}<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">${periodText}</small>`;
+            planos.forEach(plano => {
+                const priceElement = document.getElementById(plano.id);
+                if (priceElement) {
+                    priceElement.innerHTML = `${plano.preco}<small style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">/pagamento</small>`;
                 }
             });
 
-            // NOVA LÓGICA: Esconde/Mostra os botões certos com os links separados
-            const botoesMensais = document.querySelectorAll('.btn-mensal');
-            const botoesVitalicios = document.querySelectorAll('.btn-vitalicio');
-
-            botoesMensais.forEach(btn => {
-                btn.style.display = isVitalicio ? 'none' : 'inline-block';
-            });
-            
-            botoesVitalicios.forEach(btn => {
-                btn.style.display = isVitalicio ? 'inline-block' : 'none';
+            document.querySelectorAll('.btn-vitalicio').forEach(btn => {
+                btn.style.display = 'inline-block';
             });
         }
 
@@ -870,6 +1774,8 @@
             const dropdown = document.getElementById('dropdown-menu');
             dropdown.classList.toggle('active');
         }
+
+        configurarPlanos();
 
         window.onclick = function(event) {
             if (!event.target.matches('#user-greeting')) {
@@ -1109,6 +2015,232 @@
                 document.getElementById('reset-email').value = '';
             }
             btn.textContent = "ENVIAR LINK";
+        }
+
+        // ============================================================
+        // MERCADO PAGO — CHECKOUT TRANSPARENTE / PAYMENT BRICK
+        // ============================================================
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-0c7ef9bd-8639-4d54-b0db-fe305842ce0c';
+        const MERCADO_PAGO_FUNCTION_URL = 'https://xdropicachtygummacev.supabase.co/functions/v1/processar-pagamento';
+
+        const PAGAMENTO_PLANOS = {
+            fatality: {
+                nome: 'FATALITY',
+                preco: 59.90
+            },
+            brutality: {
+                nome: 'BRUTALITY',
+                preco: 159.90
+            }
+        };
+
+        let paymentBrickController = null;
+        let pagamentoAtual = null;
+
+        function setPaymentStatus(texto, tipo = 'info') {
+            const box = document.getElementById('payment-status');
+            if (!box) return;
+
+            box.style.display = texto ? 'block' : 'none';
+            box.textContent = texto || '';
+            box.style.borderColor = tipo === 'erro'
+                ? 'rgba(255,77,77,.35)'
+                : 'rgba(255,255,255,.08)';
+            box.style.color = tipo === 'erro' ? '#ff7676' : 'var(--text-muted)';
+        }
+
+        async function destruirPaymentBrick() {
+            try {
+                if (paymentBrickController?.unmount) {
+                    await paymentBrickController.unmount();
+                }
+            } catch (e) {
+                console.warn('Não foi possível desmontar o Payment Brick:', e);
+            } finally {
+                paymentBrickController = null;
+                const container = document.getElementById('paymentBrick_container');
+                if (container) container.innerHTML = '';
+            }
+        }
+
+        async function abrirCheckoutMercadoPago(plano) {
+            const planoInfo = PAGAMENTO_PLANOS[plano];
+            const modal = document.getElementById('payment-modal');
+            const pixResult = document.getElementById('pix-result');
+            const brickContainer = document.getElementById('paymentBrick_container');
+
+            pagamentoAtual = plano;
+            document.getElementById('payment-modal-title').textContent = `FINALIZAR ${planoInfo.nome}`;
+            document.getElementById('payment-modal-subtitle').textContent = `Acesso vitalício — R$ ${planoInfo.preco.toFixed(2).replace('.', ',')}`;
+            setPaymentStatus('Carregando checkout seguro do Mercado Pago...');
+            pixResult.style.display = 'none';
+            brickContainer.style.display = 'block';
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+
+            await destruirPaymentBrick();
+
+            if (!window.MercadoPago) {
+                setPaymentStatus('Não foi possível carregar o checkout do Mercado Pago.', 'erro');
+                return;
+            }
+
+            const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, { locale: 'pt-BR' });
+            const bricksBuilder = mp.bricks();
+
+            const settings = {
+                initialization: {
+                    amount: planoInfo.preco
+                },
+                customization: {
+                    paymentMethods: {
+                        bankTransfer: 'all',
+                        creditCard: 'all',
+                        debitCard: 'all',
+                        prepaidCard: 'all',
+                        ticket: 'all'
+                    },
+                    visual: {
+                        style: { theme: 'dark' },
+                        texts: {
+                            formSubmit: 'PAGAR AGORA'
+                        }
+                    }
+                },
+                callbacks: {
+                    onReady: () => {
+                        setPaymentStatus('Escolha Pix, cartão ou boleto e conclua o pagamento com segurança.');
+                    },
+                    onSubmit: ({ selectedPaymentMethod, formData }, additionalData) => {
+                        return new Promise(async (resolve, reject) => {
+                            try {
+                                setPaymentStatus('Processando pagamento...');
+
+                                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+                                if (sessionError || !session) {
+                                    throw new Error('Sua sessão expirou. Faça login novamente.');
+                                }
+
+                                const response = await fetch(MERCADO_PAGO_FUNCTION_URL, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${session.access_token}`,
+                                        'apikey': supabaseKey
+                                    },
+                                    body: JSON.stringify({
+                                        plano: pagamentoAtual,
+                                        selectedPaymentMethod,
+                                        formData,
+                                        additionalData
+                                    })
+                                });
+
+                                const resultText = await response.text();
+                                let result;
+                                try {
+                                    result = JSON.parse(resultText);
+                                } catch {
+                                    result = { raw: resultText };
+                                }
+
+                                console.log('Resposta processar-pagamento:', JSON.stringify(result, null, 2));
+
+                                if (!response.ok) {
+                                    throw new Error(result?.error || result?.message || 'Não foi possível processar o pagamento.');
+                                }
+
+                                // Pix: exibir QR Code e Pix Copia e Cola.
+                                if (result?.pix?.qr_code_base64 || result?.pix?.qr_code) {
+                                    brickContainer.style.display = 'none';
+                                    pixResult.style.display = 'block';
+                                    setPaymentStatus('Pix gerado. Faça o pagamento para concluir a compra.');
+
+                                    if (result.pix.qr_code_base64) {
+                                        document.getElementById('pix-qr').src = `data:image/png;base64,${result.pix.qr_code_base64}`;
+                                    }
+
+                                    document.getElementById('pix-copy').value = result.pix.qr_code || '';
+                                    resolve();
+                                    return;
+                                }
+
+                                setPaymentStatus(result?.message || 'Pagamento enviado. Aguarde a confirmação.');
+                                resolve();
+                            } catch (error) {
+                                console.error('Erro no processamento:', error);
+                                setPaymentStatus(error?.message || 'Não foi possível processar o pagamento.', 'erro');
+                                reject(error);
+                            }
+                        });
+                    },
+                    onError: (error) => {
+                        console.error('Erro do Payment Brick:', error);
+                        setPaymentStatus('O checkout encontrou um erro. Confira os dados e tente novamente.', 'erro');
+                    }
+                }
+            };
+
+            try {
+                paymentBrickController = await bricksBuilder.create('payment', 'paymentBrick_container', settings);
+            } catch (error) {
+                console.error('Erro ao renderizar Payment Brick:', error);
+                setPaymentStatus('Não foi possível abrir o checkout. Tente novamente.', 'erro');
+            }
+        }
+
+        async function iniciarPagamento(event, plano) {
+            event.preventDefault();
+
+            if (!dbAtivo) {
+                mostrarMensagem('Sistema de pagamento indisponível no momento.', 'erro');
+                return;
+            }
+
+            if (!PAGAMENTO_PLANOS[plano]) {
+                mostrarMensagem('Plano inválido.', 'erro');
+                return;
+            }
+
+            const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+            if (sessionError || !session) {
+                mostrarMensagem('Você precisa estar logado para comprar.', 'erro');
+                abrirLogin();
+                return;
+            }
+
+            await abrirCheckoutMercadoPago(plano);
+        }
+
+        async function fecharPagamento() {
+            await destruirPaymentBrick();
+            const modal = document.getElementById('payment-modal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.getElementById('paymentBrick_container').style.display = 'block';
+            document.getElementById('pix-result').style.display = 'none';
+            document.getElementById('pix-copy').value = '';
+            document.getElementById('pix-qr').removeAttribute('src');
+            setPaymentStatus('');
+            pagamentoAtual = null;
+        }
+
+        async function copiarPix() {
+            const campo = document.getElementById('pix-copy');
+            if (!campo.value) return;
+
+            try {
+                await navigator.clipboard.writeText(campo.value);
+                mostrarMensagem('Pix Copia e Cola copiado!', 'sucesso');
+            } catch {
+                campo.focus();
+                campo.select();
+                document.execCommand('copy');
+                mostrarMensagem('Pix Copia e Cola copiado!', 'sucesso');
+            }
         }
 
         async function handleLogout() {
