@@ -437,6 +437,36 @@
         .close-modal { position: absolute; top: 15px; right: 25px; font-size: 2rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
         .close-modal:hover { color: var(--accent-main); text-shadow: 0 0 10px var(--title-glow); }
 
+
+        /* Botão de download do aplicativo */
+        .download-app-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(225,187,120,.28);
+            color: var(--mk-gold, #e1bb78);
+            background: rgba(225,187,120,.06);
+            font-weight: 800;
+            font-size: .78rem;
+            letter-spacing: .6px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all .25s ease;
+        }
+        .download-app-btn:hover {
+            background: rgba(225,187,120,.13);
+            border-color: rgba(225,187,120,.5);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.25);
+        }
+
         /* Tabelas da Minha Conta */
         .account-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
         .account-table th { background: rgba(255,255,255,0.05); padding: 15px; color: var(--accent-main); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.1); }
@@ -1268,6 +1298,14 @@ footer {
                 <div id="user-greeting" onclick="toggleUserDropdown()">Bem-vindo, Jogador ▼</div>
                 <div id="dropdown-menu" class="user-dropdown">
                     <a href="#" onclick="abrirMinhaConta()">Minha Conta</a>
+                    <a
+                        href="https://drive.google.com/uc?export=download&id=14hRBFrAXB5FMnkE72NVWHfVzvrxfgIYn"
+                        class="download-app-btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        ↓ BAIXAR APLICATIVO
+                    </a>
                     <a href="#" onclick="handleLogout()" style="color: #ff4d4d;">Sair</a>
                 </div>
             </div>
@@ -2137,25 +2175,6 @@ footer {
             if (copy) copy.value = payload || '';
         }
 
-        async function iniciarPagamento(event, plano) {
-            if (event) event.preventDefault();
-
-            if (!dbAtivo || !supabaseClient) {
-                mostrarMensagem('Banco de dados não está disponível. Recarregue a página.', 'erro');
-                return;
-            }
-
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-
-            if (error || !session) {
-                abrirLogin();
-                mostrarMensagem('Faça login para continuar a compra.', 'erro');
-                return;
-            }
-
-            await abrirCheckoutAsaas(plano);
-        }
-
         async function abrirCheckoutAsaas(plano) {
             const planoInfo = PAGAMENTO_PLANOS[plano];
             const modal = document.getElementById('payment-modal');
@@ -2173,7 +2192,7 @@ footer {
 
             document.getElementById('payment-modal-title').textContent = `FINALIZAR ${planoInfo.nome}`;
             document.getElementById('payment-modal-subtitle').textContent = `Acesso vitalício — R$ ${planoInfo.preco.toFixed(2).replace('.', ',')}`;
-            setPaymentStatus('Conectando ao Asaas Sandbox...');
+            setPaymentStatus('Conectando ao Asaas...');
 
             if (pixResult) pixResult.style.display = 'none';
             if (loading) loading.style.display = 'block';
@@ -2236,6 +2255,12 @@ footer {
             } finally {
                 criandoPagamento = false;
             }
+        }
+
+        // Compatibilidade com os botões de compra
+        async function iniciarPagamento(event, plano) {
+            if (event) event.preventDefault();
+            return abrirCheckoutAsaas(plano);
         }
 
         async function verificarPagamentoAtual() {
