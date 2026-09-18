@@ -18,9 +18,7 @@ function json(body: unknown, status = 200) {
 }
 
 // ============================================================
-// PARSE DO X-SIGNATURE
-// Exemplo:
-// ts=1742505638683,v1=abc123...
+// PARSE X-SIGNATURE
 // ============================================================
 
 function parseSignature(header: string | null) {
@@ -39,15 +37,12 @@ function parseSignature(header: string | null) {
 
     if (!key || !value) continue;
 
-    const cleanKey = key.trim();
-    const cleanValue = value.trim();
-
-    if (cleanKey === "ts") {
-      ts = cleanValue;
+    if (key.trim() === "ts") {
+      ts = value.trim();
     }
 
-    if (cleanKey === "v1") {
-      v1 = cleanValue;
+    if (key.trim() === "v1") {
+      v1 = value.trim();
     }
   }
 
@@ -55,7 +50,7 @@ function parseSignature(header: string | null) {
 }
 
 // ============================================================
-// COMPARAÇÃO EM TEMPO CONSTANTE
+// COMPARAÇÃO SEGURA
 // ============================================================
 
 function constantTimeEqual(a: string, b: string) {
@@ -73,7 +68,7 @@ function constantTimeEqual(a: string, b: string) {
 }
 
 // ============================================================
-// HMAC SHA-256
+// HMAC SHA256
 // ============================================================
 
 async function hmacSha256Hex(
@@ -107,10 +102,10 @@ async function hmacSha256Hex(
 }
 
 // ============================================================
-// VALIDAR ASSINATURA DO MERCADO PAGO
+// VALIDAR ASSINATURA MERCADO PAGO
 // ============================================================
 
-async function validarAssinaturaMercadoPago(
+async function validarAssinatura(
   req: Request,
   dataId: string,
 ) {
@@ -118,20 +113,22 @@ async function validarAssinaturaMercadoPago(
     Deno.env.get("MP_WEBHOOK_SECRET");
 
   if (!secret) {
-    throw new Error(
-      "MP_WEBHOOK_SECRET não configurado.",
+    console.error(
+      "ERRO: MP_WEBHOOK_SECRET não encontrado.",
     );
+
+    return false;
   }
 
-  const xSignature =
+  const signature =
     req.headers.get("x-signature");
 
-  const xRequestId =
+  const requestId =
     req.headers.get("x-request-id");
 
-  if (!xSignature) {
+  if (!signature) {
     console.error(
-      "Webhook sem x-signature.",
+      "ERRO: x-signature não recebido.",
     );
 
     return false;
@@ -140,28 +137,30 @@ async function validarAssinaturaMercadoPago(
   const {
     ts,
     v1,
-  } = parseSignature(xSignature);
+  } = parseSignature(signature);
 
   if (!ts || !v1) {
     console.error(
-      "x-signature inválido.",
+      "ERRO: x-signature está incompleto.",
     );
 
     return false;
   }
 
-  // Manifest usado para gerar o HMAC
   let manifest = "";
 
-  if (dataId) {
-    manifest += `id:${dataId};`;
-  }
+  manifest += `id:${dataId};`;
 
-  if (xRequestId) {
-    manifest += `request-id:${xRequestId};`;
+  if (requestId) {
+    manifest += `request-id:${requestId};`;
   }
 
   manifest += `ts:${ts};`;
+
+  console.log(
+    "Manifest:",
+    manifest,
+  );
 
   const calculated =
     await hmacSha256Hex(
@@ -175,22 +174,16 @@ async function validarAssinaturaMercadoPago(
       v1,
     );
 
-  if (!valid) {
-    console.error(
-      "Assinatura inválida.",
-    );
-
-    console.error(
-      "Manifest:",
-      manifest,
-    );
-  }
+  console.log(
+    "Assinatura válida:",
+    valid,
+  );
 
   return valid;
 }
 
 // ============================================================
-// CONVERTER STATUS DO MERCADO PAGO
+// MAPEAR STATUS
 // ============================================================
 
 function mapearStatus(
@@ -212,13 +205,6 @@ function mapearStatus(
   }
 
   if (
-    orderStatus === "expired" ||
-    paymentStatus === "expired"
-  ) {
-    return "Expirado";
-  }
-
-  if (
     orderStatus === "failed" ||
     paymentStatus === "failed"
   ) {
@@ -226,17 +212,13 @@ function mapearStatus(
   }
 
   if (
-    orderStatus === "action_required" ||
-    paymentStatus === "action_required"
+    orderStatus === "expired" ||
+    paymentStatus === "expired"
   ) {
-    return "Pendente";
+    return "Expirado";
   }
 
-  return (
-    paymentStatus ||
-    orderStatus ||
-    "Pendente"
-  );
+  return "Pendente";
 }
 
 // ============================================================
@@ -244,25 +226,16 @@ function mapearStatus(
 // ============================================================
 
 Deno.serve(async (req) => {
-  // ----------------------------------------------------------
-  // CORS
-  // ----------------------------------------------------------
-
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders,
     });
   }
 
-  // ----------------------------------------------------------
-  // SOMENTE POST
-  // ----------------------------------------------------------
-
   if (req.method !== "POST") {
     return json(
       {
-        error:
-          "Método não permitido.",
+        error: "Método não permitido.",
       },
       405,
     );
@@ -270,73 +243,71 @@ Deno.serve(async (req) => {
 
   try {
     // ========================================================
-    // 1. LER URL DO WEBHOOK
+    // 1. URL
     // ========================================================
 
-    const requestUrl =
-      new URL(req.url);
+    const url = new URL(req.url);
 
     const dataId =
-      requestUrl.searchParams.get(
-        "data.id",
-      );
+      url.searchParams.get("data.id");
 
     const type =
-      requestUrl.searchParams.get(
-        "type",
-      );
+      url.searchParams.get("type");
+
+    // ========================================================
+    // 2. BODY
+    // ========================================================
+
+    const body =
+      await req.json().catch(() => ({}));
 
     console.log(
-      "Webhook recebido:",
+      "WEBHOOK RECEBIDO:",
       JSON.stringify(
         {
-          dataId,
           type,
+          dataId,
+          body,
         },
         null,
         2,
       ),
     );
 
-    // --------------------------------------------------------
-    // Ignorar eventos que não sejam Order
-    // --------------------------------------------------------
+    // ========================================================
+    // 3. TESTE DE URL SEM DATA.ID
+    // ========================================================
+
+    if (!dataId) {
+      return json({
+        ok: true,
+        message:
+          "Webhook ativo e acessível.",
+      });
+    }
+
+    // ========================================================
+    // 4. SOMENTE ORDER
+    // ========================================================
 
     if (
       type &&
       type !== "order"
     ) {
-      console.log(
-        "Evento ignorado:",
-        type,
-      );
-
       return json({
         ok: true,
         ignored: true,
+        reason:
+          "Evento não é Order.",
       });
     }
 
-    if (!dataId) {
-      console.error(
-        "Webhook sem data.id.",
-      );
-
-      return json(
-        {
-          error:
-            "data.id não informado.",
-        },
-        400,
-      );
-    }
-
     // ========================================================
-    // 2. VALIDAR ASSINATURA
+    // 5. VALIDAR ASSINATURA
     // ========================================================
 
     const assinaturaValida =
-      await validarAssinaturaMercadoPago(
+      await validarAssinatura(
         req,
         dataId,
       );
@@ -345,18 +316,14 @@ Deno.serve(async (req) => {
       return json(
         {
           error:
-            "Assinatura inválida.",
+            "Assinatura do Mercado Pago inválida.",
         },
         401,
       );
     }
 
-    console.log(
-      "Assinatura validada com sucesso.",
-    );
-
     // ========================================================
-    // 3. PEGAR SECRETS
+    // 6. PEGAR SECRETS
     // ========================================================
 
     const mpAccessToken =
@@ -374,13 +341,21 @@ Deno.serve(async (req) => {
         "SUPABASE_SECRET_KEYS",
       );
 
-    if (
-      !mpAccessToken ||
-      !supabaseUrl ||
-      !secretKeysRaw
-    ) {
+    if (!mpAccessToken) {
       throw new Error(
-        "Secrets obrigatórios não configurados.",
+        "MP_ACCESS_TOKEN não configurado.",
+      );
+    }
+
+    if (!supabaseUrl) {
+      throw new Error(
+        "SUPABASE_URL não configurado.",
+      );
+    }
+
+    if (!secretKeysRaw) {
+      throw new Error(
+        "SUPABASE_SECRET_KEYS não encontrado.",
       );
     }
 
@@ -394,12 +369,12 @@ Deno.serve(async (req) => {
 
     if (!supabaseSecretKey) {
       throw new Error(
-        "Chave secreta do Supabase não encontrada.",
+        "Chave secreta padrão do Supabase não encontrada.",
       );
     }
 
     // ========================================================
-    // 4. CLIENTE ADMIN DO SUPABASE
+    // 7. CLIENT ADMIN
     // ========================================================
 
     const supabaseAdmin =
@@ -415,7 +390,46 @@ Deno.serve(async (req) => {
       );
 
     // ========================================================
-    // 5. CONSULTAR ORDER NO MERCADO PAGO
+    // 8. SIMULADOR DO MERCADO PAGO
+    //
+    // O simulador usa IDs como:
+    // ORDTST...
+    //
+    // Não devemos procurar isso na API real.
+    // ========================================================
+
+    const isMercadoPagoSimulator =
+      dataId.startsWith(
+        "ORDTST",
+      );
+
+    if (isMercadoPagoSimulator) {
+      console.log(
+        "SIMULAÇÃO DO MERCADO PAGO DETECTADA.",
+      );
+
+      const simulationAction =
+        body?.action ??
+        null;
+
+      return json({
+        ok: true,
+
+        simulated: true,
+
+        message:
+          "Webhook de teste recebido corretamente.",
+
+        action:
+          simulationAction,
+
+        order_id:
+          dataId,
+      });
+    }
+
+    // ========================================================
+    // 9. ORDER REAL
     // ========================================================
 
     const orderResponse =
@@ -452,14 +466,17 @@ Deno.serve(async (req) => {
       return json(
         {
           error:
-            "Não foi possível consultar a Order.",
+            "Erro ao consultar Order no Mercado Pago.",
+
+          details:
+            order,
         },
         502,
       );
     }
 
     // ========================================================
-    // 6. EXTRAIR DADOS
+    // 10. DADOS DA ORDER
     // ========================================================
 
     const payment =
@@ -479,17 +496,14 @@ Deno.serve(async (req) => {
       payment?.status_detail ??
       null;
 
-    const externalReference =
-      order?.external_reference ??
-      null;
-
     const payerEmail =
       order?.payer?.email ??
       null;
 
     const totalAmount =
-      order?.total_amount ??
-      null;
+      Number(
+        order?.total_amount ?? 0,
+      );
 
     const statusPagamento =
       mapearStatus(
@@ -498,32 +512,15 @@ Deno.serve(async (req) => {
       );
 
     console.log(
-      "Order consultada:",
+      "ORDER REAL:",
       JSON.stringify(
         {
-          order_id:
-            order?.id,
-
-          order_status:
-            orderStatus,
-
-          payment_status:
-            paymentStatus,
-
-          payment_status_detail:
-            paymentStatusDetail,
-
-          external_reference:
-            externalReference,
-
-          payer_email:
-            payerEmail,
-
-          total_amount:
-            totalAmount,
-
-          status_pagamento:
-            statusPagamento,
+          id: order?.id,
+          status: orderStatus,
+          paymentStatus,
+          paymentStatusDetail,
+          payerEmail,
+          totalAmount,
         },
         null,
         2,
@@ -531,16 +528,16 @@ Deno.serve(async (req) => {
     );
 
     // ========================================================
-    // 7. PROCURAR COMPRA EXISTENTE
+    // 11. PROCURAR COMPRA PELO CODIGO DO PEDIDO
     // ========================================================
 
     const {
       data: compraExistente,
-      error: buscaError,
+      error: compraBuscaError,
     } = await supabaseAdmin
       .from("compras")
       .select(
-        "id, cliente_id, email_cliente, plano_comprado, chave_entregue",
+        "id, cliente_id, chave_entregue",
       )
       .eq(
         "codigo_pedido",
@@ -548,23 +545,17 @@ Deno.serve(async (req) => {
       )
       .maybeSingle();
 
-    if (buscaError) {
+    if (compraBuscaError) {
       console.error(
-        "Erro procurando compra:",
-        buscaError,
+        "Erro buscando compra:",
+        compraBuscaError,
       );
 
-      return json(
-        {
-          error:
-            "Erro ao consultar compra.",
-        },
-        500,
-      );
+      throw compraBuscaError;
     }
 
     // ========================================================
-    // 8. ATUALIZAR COMPRA EXISTENTE
+    // 12. SE JÁ EXISTE, ATUALIZA
     // ========================================================
 
     if (compraExistente) {
@@ -575,12 +566,6 @@ Deno.serve(async (req) => {
         .update({
           status_pagamento:
             statusPagamento,
-
-          // Mantemos a entrega separada
-          // da confirmação do pagamento.
-          chave_entregue:
-            compraExistente.chave_entregue ??
-            false,
         })
         .eq(
           "id",
@@ -593,13 +578,7 @@ Deno.serve(async (req) => {
           updateError,
         );
 
-        return json(
-          {
-            error:
-              "Erro ao atualizar compra.",
-          },
-          500,
-        );
+        throw updateError;
       }
 
       console.log(
@@ -611,8 +590,6 @@ Deno.serve(async (req) => {
         ok: true,
 
         updated: true,
-
-        created: false,
 
         order_id:
           order?.id,
@@ -629,7 +606,7 @@ Deno.serve(async (req) => {
     }
 
     // ========================================================
-    // 9. PROCURAR CLIENTE PELO EMAIL
+    // 13. ENCONTRAR CLIENTE
     // ========================================================
 
     let clienteId:
@@ -639,24 +616,14 @@ Deno.serve(async (req) => {
     if (payerEmail) {
       const {
         data: cliente,
-        error: clienteError,
       } = await supabaseAdmin
         .from("clientes")
-        .select(
-          "id, email",
-        )
-        .ilike(
+        .select("id")
+        .eq(
           "email",
           payerEmail,
         )
         .maybeSingle();
-
-      if (clienteError) {
-        console.error(
-          "Erro buscando cliente:",
-          clienteError,
-        );
-      }
 
       clienteId =
         cliente?.id ??
@@ -664,42 +631,39 @@ Deno.serve(async (req) => {
     }
 
     // ========================================================
-    // 10. IDENTIFICAR PLANO
+    // 14. IDENTIFICAR PLANO
     // ========================================================
 
-    let planoComprado =
+    let plano =
       "Plano";
-
-    const valor =
-      Number(totalAmount);
 
     if (
       Math.abs(
-        valor - 59.90,
+        totalAmount - 59.90,
       ) < 0.001
     ) {
-      planoComprado =
+      plano =
         "FATALITY - Acesso Vitalício";
     }
 
     if (
       Math.abs(
-        valor - 159.90,
+        totalAmount - 159.90,
       ) < 0.001
     ) {
-      planoComprado =
+      plano =
         "BRUTALITY - Acesso Vitalício";
     }
 
     if (order?.description) {
-      planoComprado =
+      plano =
         String(
           order.description,
         );
     }
 
     // ========================================================
-    // 11. CRIAR COMPRA CASO NÃO EXISTA
+    // 15. CRIAR COMPRA
     // ========================================================
 
     const {
@@ -715,7 +679,7 @@ Deno.serve(async (req) => {
           payerEmail,
 
         plano_comprado:
-          planoComprado,
+          plano,
 
         status_pagamento:
           statusPagamento,
@@ -736,32 +700,20 @@ Deno.serve(async (req) => {
 
     if (insertError) {
       console.error(
-        "Erro criando compra:",
+        "Erro inserindo compra:",
         insertError,
       );
 
-      return json(
-        {
-          error:
-            "Erro ao registrar compra.",
-        },
-        500,
-      );
+      throw insertError;
     }
 
     console.log(
-      "Nova compra criada:",
+      "Compra criada:",
       novaCompra?.id,
     );
 
-    // ========================================================
-    // 12. RESPONDER AO MERCADO PAGO
-    // ========================================================
-
     return json({
       ok: true,
-
-      updated: false,
 
       created: true,
 
@@ -770,21 +722,11 @@ Deno.serve(async (req) => {
 
       status_pagamento:
         statusPagamento,
-
-      payment_status:
-        paymentStatus,
-
-      payment_status_detail:
-        paymentStatusDetail,
-
-      external_reference:
-        externalReference,
     });
 
   } catch (error) {
-
     console.error(
-      "Erro no webhook Mercado Pago:",
+      "ERRO FATAL WEBHOOK:",
       error,
     );
 
@@ -796,7 +738,7 @@ Deno.serve(async (req) => {
         message:
           error instanceof Error
             ? error.message
-            : "Erro desconhecido.",
+            : String(error),
       },
       500,
     );
