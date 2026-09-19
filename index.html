@@ -1583,7 +1583,7 @@ footer {
                     <li>👾 Vídeos de demonstração</li>
                     <li>👾 Atendimento 24/7 com a equipe</li>
                 </ul>
-                <a href="https://discord.gg/ZWaN9rCFQw" class="btn" style="background: #5865F2; color: #fff;" target="_blank">ACESSAR DISCORD</a>
+                <a href="https://discord.gg/BKukpWwfwS" class="btn" style="background: #5865F2; color: #fff;" target="_blank">ACESSAR DISCORD</a>
             </div>
         </div>
     </section>
@@ -1702,12 +1702,20 @@ footer {
                 <h2>NOVO RECRUTA</h2>
                 <form onsubmit="handleSignup(event)">
                     <div class="input-group">
+                        <label>Nome completo</label>
+                        <input type="text" id="signup-nome" placeholder="Seu nome completo" required autocomplete="name">
+                    </div>
+                    <div class="input-group">
+                        <label>CPF ou CNPJ</label>
+                        <input type="text" id="signup-cpf-cnpj" placeholder="000.000.000-00 ou 00.000.000/0000-00" required inputmode="numeric" autocomplete="off" maxlength="18">
+                    </div>
+                    <div class="input-group">
                         <label>E-mail</label>
-                        <input type="email" id="signup-email" placeholder="gamer@fatality.com" required>
+                        <input type="email" id="signup-email" placeholder="gamer@fatality.com" required autocomplete="email">
                     </div>
                     <div class="input-group">
                         <label>Criar Senha</label>
-                        <input type="password" id="signup-senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+                        <input type="password" id="signup-senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
                     </div>
                     <button type="submit" class="btn" id="btn-signup-submit">ALISTAR-SE</button>
                     <div class="login-links center"><a href="#" onclick="switchAuthView('view-login')">Já tenho conta. Voltar</a></div>
@@ -2075,24 +2083,121 @@ footer {
             }
         }
 
+        function somenteDigitos(valor) {
+            return String(valor || '').replace(/\D/g, '');
+        }
+
+        function formatarCpfCnpj(valor) {
+            const digits = somenteDigitos(valor).slice(0, 14);
+
+            if (digits.length <= 11) {
+                return digits
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+
+            return digits
+                .replace(/^(\d{2})(\d)/, '$1.$2')
+                .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cpfInput = document.getElementById('signup-cpf-cnpj');
+            if (cpfInput) {
+                cpfInput.addEventListener('input', () => {
+                    cpfInput.value = formatarCpfCnpj(cpfInput.value);
+                });
+            }
+        });
+
         async function handleSignup(e) {
             e.preventDefault();
             if (!dbAtivo) return mostrarMensagem('Configure as chaves do Supabase no código!', 'erro');
-            const email = document.getElementById('signup-email').value;
+
+            const nome = document.getElementById('signup-nome').value.trim();
+            const email = document.getElementById('signup-email').value.trim().toLowerCase();
             const password = document.getElementById('signup-senha').value;
+            const cpfCnpj = somenteDigitos(document.getElementById('signup-cpf-cnpj').value);
             const btn = document.getElementById('btn-signup-submit');
+
+            if (nome.length < 3) {
+                mostrarMensagem('Digite seu nome completo.', 'erro');
+                return;
+            }
+
+            if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
+                mostrarMensagem('Digite um CPF com 11 dígitos ou CNPJ com 14 dígitos.', 'erro');
+                return;
+            }
+
+            btn.disabled = true;
             btn.textContent = "CRIANDO CONTA...";
-            
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            
-            if (error) {
-                mostrarMensagem('Erro: ' + error.message, 'erro');
-            } else {
-                mostrarMensagem('Conta criada! Verifique seu e-mail.', 'sucesso');
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            nome,
+                            cpf_cnpj: cpfCnpj
+                        }
+                    }
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!data?.user?.id) {
+                    throw new Error('Não foi possível criar o usuário.');
+                }
+
+                if (!data.session) {
+                    mostrarMensagem('Conta criada. Confirme o e-mail para continuar.', 'sucesso');
+                    document.getElementById('signup-email').value = '';
+                    document.getElementById('signup-senha').value = '';
+                    document.getElementById('signup-cpf-cnpj').value = '';
+                    document.getElementById('signup-nome').value = '';
+                    return;
+                }
+
+                const { error: clienteError } = await supabaseClient
+                    .from('clientes')
+                    .upsert({
+                        id: data.user.id,
+                        email,
+                        nome,
+                        cpf_cnpj: cpfCnpj
+                    }, {
+                        onConflict: 'id'
+                    });
+
+                if (clienteError) {
+                    console.error('Erro ao criar cliente:', clienteError);
+                    throw new Error('A conta foi criada, mas não foi possível salvar seus dados de cadastro.');
+                }
+
+                mostrarMensagem('Conta criada com sucesso! Você já pode entrar e comprar.', 'sucesso');
                 document.getElementById('signup-email').value = '';
                 document.getElementById('signup-senha').value = '';
+                document.getElementById('signup-cpf-cnpj').value = '';
+                document.getElementById('signup-nome').value = '';
+
+                setTimeout(() => {
+                    switchAuthView('view-login');
+                    document.getElementById('login-email').value = email;
+                }, 1200);
+            } catch (error) {
+                console.error('Erro no cadastro:', error);
+                mostrarMensagem('Erro: ' + (error?.message || 'não foi possível criar a conta.'), 'erro');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "ALISTAR-SE";
             }
-            btn.textContent = "ALISTAR-SE";
         }
 
         async function handleReset(e) {
